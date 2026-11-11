@@ -8,18 +8,19 @@ const userSchema = new mondongo.Schema({
     email: {
         type: String,
         require: true,
-        
+        unique: true
     },
     password: {
         type: String,
         require: true
     },
-    esVip: {
+    isVip: {
         type: Boolean,
         require: true
     },
-    noSeQuePoner: {
+    phone: {
         type: String,
+        require: true
     }
 })
 

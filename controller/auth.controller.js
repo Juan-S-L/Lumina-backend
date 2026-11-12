@@ -3,7 +3,15 @@ const User = require('../models/User')
 const registrar = async(peticion, respuesta) => {
     try {
         const {name,email,password,isVip,phone} = peticion.body
-        let user = new User({
+        let user = await User.findOne({email: email})
+
+        if (user) {
+            return respuesta.status(400).json({
+                msg: "El email ya existe"
+            })
+        }
+        
+        user = new User({
             name,
             email,
             password,

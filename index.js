@@ -11,7 +11,7 @@ const authRouter = require("./router/auth.routes")
 dotenv.config()
 app.use(cors())
 app.use(express.json())
-app.use("/api", authRouter)
+app.use("/api/users", authRouter)
 
 // base de datos
 const dbConection = require("./config/database")

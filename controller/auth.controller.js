@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const bcript = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 const registrar = async(peticion, respuesta) => {
     try {
@@ -11,10 +13,12 @@ const registrar = async(peticion, respuesta) => {
             })
         }
         
+        const hash = await bcript.hash(password, 10);
+
         user = new User({
             name,
             email,
-            password,
+            password: hash,
             isVip,
             phone
         })
@@ -34,22 +38,27 @@ const login = async(peticion, respuesta) => {
     try {
         const {email,password} = peticion.body
         let user = await User.findOne({email: email})
+        const esValida = await bcript.compare(password, user.password)
 
         if (!user) {
             return respuesta.status(404).json({
                 msg: "Error al inciar sesion"
             })
-        }else if (user.password != password) {
+        }else if (!esValida) {
             return respuesta.status(400).json({
                 msg: "Error al inciar sesion, contraseña incorrecta"
             })
             
         }
 
-        // throw new Error("Error de prueba de inicio de sesion invalido");
+        const token = jwt.sign(
+            {id: user._id},
+            process.env.LLAVE_SECRETA,
+            {expiresIn: "1h"}
+        )
 
         return respuesta.status(200).json({
-            msg: `Hola ${user.name}, Has iniciado sesion`
+            token
         })
     } catch (error) {
         return respuesta.status(500).json({
